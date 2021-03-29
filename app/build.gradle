@@ -21,6 +21,8 @@ android {
             properties.load(rootProject.file("local.properties").newDataInputStream())
         }
 
+        // Esta parte es clave. Estamos poniendo nuestra APIKEY en la clase BuildCongif de modo que podamos acceder a ella desde Koltin.
+        buildConfigField "String", "MAPS_API_KEY", "\"" + properties.getProperty("MAPS_API_KEY", "") + "\""
         manifestPlaceholders = [ mapsApiKey : properties.getProperty("MAPS_API_KEY", "") ]
 
     }
@@ -38,6 +40,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -51,4 +56,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    implementation 'com.google.android.libraries.places:places:2.4.0'
+
 }
