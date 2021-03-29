@@ -38,6 +38,10 @@ class MapsActivity : AppCompatActivity(), PlacesAdapter.OnItemClicked {
         binding.rvSuggestions.adapter = autocompleteAdapter
 
         binding.etAddress.addTextChangedListener(watcher)
+
+        if (BuildConfig.MAPS_API_KEY.isEmpty()){
+            Snackbar.make(binding.root, "Debes poner tu MAPS_API_KEY en tu local.properties", Snackbar.LENGTH_INDEFINITE).show()
+        }
     }
 
 
