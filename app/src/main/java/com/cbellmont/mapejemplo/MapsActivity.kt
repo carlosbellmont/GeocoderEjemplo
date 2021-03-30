@@ -1,5 +1,6 @@
 package com.cbellmont.mapejemplo
 
+import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,12 +28,14 @@ class MapsActivity : AppCompatActivity(), PlacesAdapter.OnItemClicked {
     private val token = AutocompleteSessionToken.newInstance()
 
     private lateinit var autocompleteAdapter : PlacesAdapter
+    private lateinit var geocoder : Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        geocoder = Geocoder(this)
         autocompleteAdapter = PlacesAdapter(this)
         binding.rvSuggestions.layoutManager = LinearLayoutManager(this)
         binding.rvSuggestions.adapter = autocompleteAdapter
@@ -42,9 +45,24 @@ class MapsActivity : AppCompatActivity(), PlacesAdapter.OnItemClicked {
         if (BuildConfig.MAPS_API_KEY.isEmpty()){
             Snackbar.make(binding.root, "Debes poner tu MAPS_API_KEY en tu local.properties", Snackbar.LENGTH_INDEFINITE).show()
         }
+
+        // Código del ejemplo empieza aquí.
+
+        binding.bShowLatLong.setOnClickListener {
+            if (binding.etAddress.text.isEmpty()) {
+                Snackbar.make(binding.bShowLatLong, "Introduce una dirección.", Snackbar.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+            val results = geocoder.getFromLocationName(binding.etAddress.text.toString(), 5)
+            results.forEach {
+                Log.d(MapsActivity::class.java.name, "Se ha recibido la posible localizacion ${it.latitude} y ${it.longitude}")
+            }
+            Snackbar.make(binding.bShowLatLong, "Se han recibido la siguiente latitud y longitud", Snackbar.LENGTH_LONG).show()
+        }
     }
 
 
+    // Esta función no está relacionada con el ejemplo actual.
     override fun onItemClicked(place: String) {
         binding.etAddress.removeTextChangedListener (watcher)
         autocompleteAdapter.updateData(listOf())
@@ -52,6 +70,7 @@ class MapsActivity : AppCompatActivity(), PlacesAdapter.OnItemClicked {
         binding.etAddress.addTextChangedListener (watcher)
     }
 
+    // Esta variable no está relacionada con el ejemplo actual.
     private val watcher = object : TextWatcher{
         override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
